@@ -1,6 +1,7 @@
 const { v4: uuidv4 } = require("uuid");
 const path = require("path");
 const fs = require("fs").promises;
+require("colors");
 
 const contactsPath = path.join("db", "contacts.json");
 /**
@@ -44,8 +45,12 @@ async function listContacts() {
  * @returns {array<object>}
  */
 async function getContactById(contactId) {
-  const contacts = await readContacts(contactsPath);
-  const contactById = contacts.filter(({ id }) => id === contactId);
+    const contacts = await readContacts(contactsPath);
+    const contactById = contacts.filter(({ id }) => id === contactId);
+    if (!contactById) {
+      console.log(`Contact with id: ${contactId} is not found!`.red);
+      return;
+    }
   console.table(contactById);
 }
 /**
@@ -54,9 +59,15 @@ async function getContactById(contactId) {
  * @returns {array<object>}
  */
 async function removeContact(contactId) {
-  const contacts = await readContacts(contactsPath);
-  const contactById = contacts.filter(({ id }) => id !== contactId);
-  console.table(contactById);
+    const contacts = await readContacts(contactsPath);
+    const contactById = contacts.filter(({ id }) => id !== contactId);
+    
+    if (!contactById) {
+      console.log(`Contact with id: ${contactId} is not found!`.red);
+      return;
+    }
+    console.log(`Contact with id: ${contactId} removed!`.yellow);
+    console.table(contactById);
 }
 /**
  * addContact
@@ -74,8 +85,10 @@ async function addContact(name, email, phone) {
     }
     const contacts = await readContacts(contactsPath);
     const data = [...contacts, newContact];
-    console.table(data);
     writeContacts(contactsPath, data);
+
+    console.log('Succsess !!! You add new contact'.green)
+    console.table(data);
 }
 
 module.exports = {
