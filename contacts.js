@@ -47,7 +47,8 @@ async function listContacts() {
 async function getContactById(contactId) {
     const contacts = await readContacts(contactsPath);
     const contactById = contacts.filter(({ id }) => id === contactId);
-    if (!contactById) {
+   
+    if (!contactById.length > 0) {
       console.log(`Contact with id: ${contactId} is not found!`.red);
       return;
     }
@@ -60,14 +61,16 @@ async function getContactById(contactId) {
  */
 async function removeContact(contactId) {
     const contacts = await readContacts(contactsPath);
-    const contactById = contacts.filter(({ id }) => id !== contactId);
-    
-    if (!contactById) {
+    const data = contacts.filter(({ id }) => id !== contactId);
+  
+    if (data.length === contacts.length) {
       console.log(`Contact with id: ${contactId} is not found!`.red);
       return;
     }
+    writeContacts(contactsPath, data);
+
     console.log(`Contact with id: ${contactId} removed!`.yellow);
-    console.table(contactById);
+    console.table(data);
 }
 /**
  * addContact
@@ -85,6 +88,7 @@ async function addContact(name, email, phone) {
     }
     const contacts = await readContacts(contactsPath);
     const data = [...contacts, newContact];
+
     writeContacts(contactsPath, data);
 
     console.log('Succsess !!! You add new contact'.green)
